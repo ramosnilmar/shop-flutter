@@ -3,6 +3,7 @@ import 'package:shop/providers/product.dart';
 
 class CartItem {
   final String id;
+  final String productId;
   final String title;
   final int quantity;
   final double price;
@@ -10,6 +11,7 @@ class CartItem {
 
   CartItem({
     required this.id,
+    required this.productId,
     required this.title,
     required this.quantity,
     required this.price,
@@ -24,10 +26,20 @@ class Cart with ChangeNotifier {
 
   int get itemsCount => _items.length;
 
+  int get badgeItemsCount {
+    int total = 0;
+
+    _items.forEach((_, cartItem) {
+      total += cartItem.quantity;
+    });
+
+    return total;
+  }
+
   double get totalAmount {
     double total = 0.0;
 
-    _items.forEach((key, cartItem) {
+    _items.forEach((_, cartItem) {
       total += cartItem.price * cartItem.quantity;
     });
 
@@ -40,6 +52,7 @@ class Cart with ChangeNotifier {
         product.id,
         (existingItem) => CartItem(
           id: existingItem.id,
+          productId: existingItem.productId,
           title: existingItem.title,
           quantity: existingItem.quantity + 1,
           price: existingItem.price,
@@ -51,6 +64,7 @@ class Cart with ChangeNotifier {
         product.id,
         () => CartItem(
           id: DateTime.now().toString(),
+          productId: product.id,
           title: product.title,
           quantity: 1,
           price: product.price,
@@ -76,6 +90,7 @@ class Cart with ChangeNotifier {
         productId,
         (existingItem) => CartItem(
           id: existingItem.id,
+          productId: existingItem.productId,
           title: existingItem.title,
           quantity: existingItem.quantity - 1,
           price: existingItem.price,
