@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/widgets/app_bar_widget.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({super.key});
@@ -9,8 +10,8 @@ class ProductDetailScreen extends StatelessWidget {
     final Product product =
         ModalRoute.of(context)?.settings.arguments as Product;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
+      appBar: AppBarWidget(
+        title: product.title,
       ),
       body: Column(
         children: <Widget>[
