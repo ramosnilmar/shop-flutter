@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shop/providers/cart.dart';
+import 'package:http/http.dart' as http;
 
 class Order {
   final String id;
@@ -16,23 +19,76 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
-  final List<Order> _items = [];
+  final String _baseUrl =
+      'https://shop-flutter-15e53-default-rtdb.firebaseio.com/orders';
+
+  List<Order> _items = [];
 
   List<Order> get items => [..._items];
 
   int get itemsCount => _items.length;
 
-  void addOrder(Cart cart) {
+  Future<void> loadOrders() async {
+    final response = await http.get(Uri.parse('$_baseUrl.json'));
+    Map<String, dynamic>? data = jsonDecode(response.body);
+
+    List<Order> loadedItems = [];
+
+    if (data != null) {
+      data.forEach((key, value) {
+        loadedItems.add(Order(
+          id: key,
+          amount: value['amount'],
+          date: DateTime.parse(value['date']),
+          products: (value['products'] as List<dynamic>).map((item) {
+            return CartItem(
+              id: item['id'],
+              productId: item['productId'],
+              title: item['title'],
+              quantity: item['quantity'],
+              price: item['price'],
+            );
+          }).toList(),
+        ));
+      });
+      notifyListeners();
+    }
+    _items = loadedItems.reversed.toList();
+
+    return Future.value();
+  }
+
+  Future<void> addOrder(Cart cart) async {
+    final date = DateTime.now();
+
+    final response = await http.post(
+      Uri.parse('$_baseUrl.json'),
+      body: jsonEncode({
+        'amount': cart.totalAmount,
+        'date': date.toIso8601String(),
+        'products': cart.items.values
+            .map(
+              (cartItem) => {
+                'id': cartItem.id,
+                'productId': cartItem.productId,
+                'title': cartItem.title,
+                'quantity': cartItem.quantity,
+                'price': cartItem.price,
+              },
+            )
+            .toList(),
+      }),
+    );
+
     _items.insert(
       0,
       Order(
-        id: DateTime.now().toString(),
+        id: jsonDecode(response.body)['name'],
         amount: cart.totalAmount,
         products: cart.items.values.toList(),
-        date: DateTime.now(),
+        date: date,
       ),
     );
-
     notifyListeners();
   }
 }
