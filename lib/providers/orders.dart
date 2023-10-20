@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop/utils/constants.dart';
 
 class Order {
   final String id;
@@ -19,8 +20,7 @@ class Order {
 }
 
 class Orders with ChangeNotifier {
-  final String _baseUrl =
-      'https://shop-flutter-15e53-default-rtdb.firebaseio.com/orders';
+  final String _baseUrl = '${Constants.baseUrlApi}/orders';
 
   List<Order> _items = [];
 
