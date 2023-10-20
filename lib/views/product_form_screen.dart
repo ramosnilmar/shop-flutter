@@ -1,7 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/providers/products.dart';
 
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({super.key});
@@ -22,6 +22,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void initState() {
     super.initState();
     _imageUrlFocusNode.addListener(_updateImage);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    if (_formData.isEmpty) {
+      final product = ModalRoute.of(context)?.settings.arguments as Product?;
+
+      if (product != null) {
+        _formData['id'] = product.id;
+        _formData['title'] = product.title;
+        _formData['description'] = product.description;
+        _formData['price'] = product.price;
+        _formData['imageUrl'] = product.imageUrl;
+
+        _imageUrlController.text = _formData['imageUrl'];
+      } else {
+        _formData['price'] = '';
+      }
+    }
   }
 
   void _updateImage() {
@@ -49,13 +70,22 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     }
 
     _form.currentState?.save();
-    final newProduct = Product(
-      id: Random().nextDouble().toString(),
+
+    final product = Product(
+      id: _formData['id'],
       title: _formData['title'],
       description: _formData['description'],
       price: _formData['price'],
       imageUrl: _formData['imageUrl'],
     );
+
+    final products = Provider.of<Products>(context, listen: false);
+    if (_formData['id'] == null) {
+      products.addProduct(product);
+    } else {
+      products.updateProduct(product);
+    }
+    Navigator.of(context).pop();
   }
 
   @override
@@ -89,6 +119,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               child: Column(
                 children: <Widget>[
                   TextFormField(
+                    initialValue: _formData['title'],
                     decoration: const InputDecoration(labelText: 'Título'),
                     textInputAction: TextInputAction.next,
                     onFieldSubmitted: (_) {
@@ -96,7 +127,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     },
                     onSaved: (value) => _formData['title'] = value,
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
+                      bool isEmpty = value == null || value.trim().isEmpty;
+                      bool isInvalid = isEmpty || value.trim().length < 3;
+                      if (isInvalid) {
                         return 'Informe um título válido';
                       }
 
@@ -104,6 +137,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     },
                   ),
                   TextFormField(
+                    initialValue: _formData['price'].toString(),
                     decoration: const InputDecoration(labelText: 'Preço'),
                     keyboardType: const TextInputType.numberWithOptions(
                       decimal: true,
@@ -131,6 +165,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     },
                   ),
                   TextFormField(
+                    initialValue: _formData['description'],
                     decoration: const InputDecoration(labelText: 'Descrição'),
                     maxLines: 3,
                     keyboardType: TextInputType.multiline,
