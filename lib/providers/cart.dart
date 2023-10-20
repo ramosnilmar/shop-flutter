@@ -47,9 +47,9 @@ class Cart with ChangeNotifier {
   }
 
   void addItem(Product product) {
-    if (_items.containsKey(product.id)) {
+    if (_items.containsKey(product.id!)) {
       _items.update(
-        product.id,
+        product.id!,
         (existingItem) => CartItem(
           id: existingItem.id,
           productId: existingItem.productId,
@@ -61,10 +61,10 @@ class Cart with ChangeNotifier {
       );
     } else {
       _items.putIfAbsent(
-        product.id,
+        product.id!,
         () => CartItem(
           id: DateTime.now().toString(),
-          productId: product.id,
+          productId: product.id!,
           title: product.title,
           quantity: 1,
           price: product.price,
