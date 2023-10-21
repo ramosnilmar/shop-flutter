@@ -23,12 +23,16 @@ class CartScreen extends StatelessWidget {
             height: 25,
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: cart.itemsCount,
-              itemBuilder: (ctx, i) => CartItemWidget(
-                cartItem: cartItems[i],
-              ),
-            ),
+            child: cart.itemsCount < 1
+                ? const Center(
+                    child: Text('Nenhum Produto adicionado'),
+                  )
+                : ListView.builder(
+                    itemCount: cart.itemsCount,
+                    itemBuilder: (ctx, i) => CartItemWidget(
+                      cartItem: cartItems[i],
+                    ),
+                  ),
           ),
           Card(
             margin: const EdgeInsets.all(20),
