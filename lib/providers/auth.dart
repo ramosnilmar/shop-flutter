@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop/data/store.dart';
 import 'package:shop/exceptions/auth_exception.dart';
@@ -36,9 +35,9 @@ class Auth with ChangeNotifier {
     required String password,
     required String urlSegment,
   }) async {
-    await dotenv.load(fileName: '.env');
+    String firebaseKey = const String.fromEnvironment("firebaseKey");
     final url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=${dotenv.env['FIREBASE_KEY']}';
+        'https://identitytoolkit.googleapis.com/v1/accounts:$urlSegment?key=$firebaseKey';
 
     final response = await http.post(
       Uri.parse(url),
