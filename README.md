@@ -17,4 +17,13 @@ samples, guidance on mobile development, and a full API reference.
 
 ## ScreenShots
 
-<img scr="prints/1.png">
+<img width="250" src="prints/1.png"/>
+<img width="250" src="prints/2.png"/>
+<img width="250" src="prints/3.png"/>
+<img width="250" src="prints/4.png"/>
+<img width="250" src="prints/5.png"/>
+<img width="250" src="prints/6.png"/>
+<img width="250" src="prints/7.png"/>
+<img width="250" src="prints/8.png"/>
+<img width="250" src="prints/9.png"/>
+<img width="250" src="prints/10.png"/>
